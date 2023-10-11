@@ -124,6 +124,8 @@ struct wpa_state_machine {
 	u32 dot11RSNAStatsTKIPLocalMICFailures;
 	u32 dot11RSNAStatsTKIPRemoteMICFailures;
 
+	bool rsn_override;
+
 #ifdef CONFIG_IEEE80211R_AP
 	u8 xxkey[PMK_LEN_MAX]; /* PSK or the second 256 bits of MSK, or the
 				* first 384 bits of MSK */

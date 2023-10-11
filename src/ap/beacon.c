@@ -398,6 +398,56 @@ static u8 * hostapd_get_osen_ie(struct hostapd_data *hapd, u8 *pos, size_t len)
 }
 
 
+static u8 * hostapd_get_rsne_override(struct hostapd_data *hapd, u8 *pos,
+				      size_t len)
+{
+	const u8 *ie;
+
+	ie = hostapd_vendor_wpa_ie(hapd, RSNE_OVERRIDE_IE_VENDOR_TYPE);
+	if (!ie || 2U + ie[1] > len)
+		return pos;
+
+	os_memcpy(pos, ie, 2 + ie[1]);
+	return pos + 2 + ie[1];
+}
+
+
+static u8 * hostapd_get_rsnxe_override(struct hostapd_data *hapd, u8 *pos,
+				       size_t len)
+{
+	const u8 *ie;
+
+	ie = hostapd_vendor_wpa_ie(hapd, RSNXE_OVERRIDE_IE_VENDOR_TYPE);
+	if (!ie || 2U + ie[1] > len)
+		return pos;
+
+	os_memcpy(pos, ie, 2 + ie[1]);
+	return pos + 2 + ie[1];
+}
+
+
+static size_t hostapd_get_rsne_override_len(struct hostapd_data *hapd)
+{
+	const u8 *ie;
+
+	ie = hostapd_vendor_wpa_ie(hapd, RSNE_OVERRIDE_IE_VENDOR_TYPE);
+	if (!ie)
+		return 0;
+	return 2 + ie[1];
+}
+
+
+static size_t hostapd_get_rsnxe_override_len(struct hostapd_data *hapd)
+{
+	const u8 *ie;
+
+	ie = hostapd_vendor_wpa_ie(hapd, RSNXE_OVERRIDE_IE_VENDOR_TYPE);
+	if (!ie)
+		return 0;
+	return 2 + ie[1];
+}
+
+
 static u8 * hostapd_eid_csa(struct hostapd_data *hapd, u8 *eid)
 {
 #ifdef CONFIG_TESTING_OPTIONS
@@ -622,6 +672,8 @@ static u8 * hostapd_gen_probe_resp(struct hostapd_data *hapd,
 	buflen += hostapd_mbo_ie_len(hapd);
 	buflen += hostapd_eid_owe_trans_len(hapd);
 	buflen += hostapd_eid_dpp_cc_len(hapd);
+	buflen += hostapd_get_rsne_override_len(hapd);
+	buflen += hostapd_get_rsnxe_override_len(hapd);
 
 	resp = os_zalloc(buflen);
 	if (resp == NULL)
@@ -811,6 +863,9 @@ static u8 * hostapd_gen_probe_resp(struct hostapd_data *hapd,
 	pos = hostapd_eid_mbo(hapd, pos, (u8 *) resp + buflen - pos);
 	pos = hostapd_eid_owe_trans(hapd, pos, (u8 *) resp + buflen - pos);
 	pos = hostapd_eid_dpp_cc(hapd, pos, (u8 *) resp + buflen - pos);
+
+	pos = hostapd_get_rsne_override(hapd, pos, epos - pos);
+	pos = hostapd_get_rsnxe_override(hapd, pos, epos - pos);
 
 	if (hapd->conf->vendor_elements) {
 		os_memcpy(pos, wpabuf_head(hapd->conf->vendor_elements),
@@ -1789,6 +1844,8 @@ int ieee802_11_build_ap_params(struct hostapd_data *hapd,
 	tail_len += hostapd_mbo_ie_len(hapd);
 	tail_len += hostapd_eid_owe_trans_len(hapd);
 	tail_len += hostapd_eid_dpp_cc_len(hapd);
+	tail_len += hostapd_get_rsne_override_len(hapd);
+	tail_len += hostapd_get_rsnxe_override_len(hapd);
 
 	tailpos = tail = os_malloc(tail_len);
 	if (head == NULL || tail == NULL) {
@@ -1999,6 +2056,11 @@ int ieee802_11_build_ap_params(struct hostapd_data *hapd,
 	tailpos = hostapd_eid_owe_trans(hapd, tailpos,
 					tail + tail_len - tailpos);
 	tailpos = hostapd_eid_dpp_cc(hapd, tailpos, tail + tail_len - tailpos);
+
+	tailpos = hostapd_get_rsne_override(hapd, tailpos,
+					    tail + tail_len - tailpos);
+	tailpos = hostapd_get_rsnxe_override(hapd, tailpos,
+					     tail + tail_len - tailpos);
 
 	if (hapd->conf->vendor_elements) {
 		os_memcpy(tailpos, wpabuf_head(hapd->conf->vendor_elements),

@@ -173,6 +173,7 @@ struct wpa_auth_config {
 	int wpa;
 	int extended_key_id;
 	int wpa_key_mgmt;
+	int rsn_override_key_mgmt;
 	int wpa_pairwise;
 	int wpa_group;
 	int wpa_group_rekey;
@@ -184,6 +185,7 @@ struct wpa_auth_config {
 	u32 wpa_pairwise_update_count;
 	int wpa_disable_eapol_key_retries;
 	int rsn_pairwise;
+	int rsn_override_pairwise;
 	int rsn_preauth;
 	int eapol_version;
 	int wmm_enabled;
@@ -192,6 +194,7 @@ struct wpa_auth_config {
 	int okc;
 	int tx_status;
 	enum mfp_options ieee80211w;
+	enum mfp_options rsn_override_mfp;
 	int beacon_prot;
 	int group_mgmt_cipher;
 	int sae_require_mfp;
@@ -420,7 +423,8 @@ wpa_validate_wpa_ie(struct wpa_authenticator *wpa_auth,
 		    const u8 *wpa_ie, size_t wpa_ie_len,
 		    const u8 *rsnxe, size_t rsnxe_len,
 		    const u8 *mdie, size_t mdie_len,
-		    const u8 *owe_dh, size_t owe_dh_len);
+		    const u8 *owe_dh, size_t owe_dh_len,
+		    const u8 *rsne_override, size_t rsne_override_len);
 int wpa_validate_osen(struct wpa_authenticator *wpa_auth,
 		      struct wpa_state_machine *sm,
 		      const u8 *osen_ie, size_t osen_ie_len);

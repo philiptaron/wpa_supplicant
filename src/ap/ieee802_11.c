@@ -1872,7 +1872,9 @@ void handle_auth_fils(struct hostapd_data *hapd, struct sta_info *sta,
 				  elems.rsn_ie - 2, elems.rsn_ie_len + 2,
 				  elems.rsnxe ? elems.rsnxe - 2 : NULL,
 				  elems.rsnxe ? elems.rsnxe_len + 2 : 0,
-				  elems.mdie, elems.mdie_len, NULL, 0);
+				  elems.mdie, elems.mdie_len, NULL, 0,
+				  elems.rsne_override,
+				  elems.rsne_override_len);
 	resp = wpa_res_to_status_code(res);
 	if (resp != WLAN_STATUS_SUCCESS)
 		goto fail;
@@ -2871,7 +2873,9 @@ static void handle_auth(struct hostapd_data *hapd,
 	       auth_alg == WLAN_AUTH_FT) ||
 #endif /* CONFIG_IEEE80211R_AP */
 #ifdef CONFIG_SAE
-	      (hapd->conf->wpa && wpa_key_mgmt_sae(hapd->conf->wpa_key_mgmt) &&
+	      (hapd->conf->wpa &&
+	       wpa_key_mgmt_sae(hapd->conf->wpa_key_mgmt |
+				hapd->conf->rsn_override_key_mgmt) &&
 	       auth_alg == WLAN_AUTH_SAE) ||
 #endif /* CONFIG_SAE */
 #ifdef CONFIG_FILS
@@ -3734,7 +3738,8 @@ u16 owe_process_rsn_ie(struct hostapd_data *hapd,
 	rsn_ie_len += 2;
 	res = wpa_validate_wpa_ie(hapd->wpa_auth, sta->wpa_sm,
 				  hapd->iface->freq, rsn_ie, rsn_ie_len,
-				  NULL, 0, NULL, 0, owe_dh, owe_dh_len);
+				  NULL, 0, NULL, 0, owe_dh, owe_dh_len,
+				  NULL, 0);
 	status = wpa_res_to_status_code(res);
 	if (status != WLAN_STATUS_SUCCESS)
 		goto end;
@@ -4033,7 +4038,9 @@ static int __check_assoc_ies(struct hostapd_data *hapd, struct sta_info *sta,
 					  elems->rsnxe ? elems->rsnxe_len + 2 :
 					  0,
 					  elems->mdie, elems->mdie_len,
-					  elems->owe_dh, elems->owe_dh_len);
+					  elems->owe_dh, elems->owe_dh_len,
+					  elems->rsne_override,
+					  elems->rsne_override_len);
 		resp = wpa_res_to_status_code(res);
 		if (resp != WLAN_STATUS_SUCCESS)
 			return resp;
