@@ -132,6 +132,7 @@ enum wpa_sm_conf_params {
 	WPA_PARAM_OCI_FREQ_FT_ASSOC,
 	WPA_PARAM_OCI_FREQ_FILS_ASSOC,
 	WPA_PARAM_DISABLE_EAPOL_G2_TX,
+	WPA_PARAM_RSN_OVERRIDE,
 };
 
 struct rsn_supp_config {

@@ -1472,11 +1472,21 @@ struct wpabuf * wpa_bss_defrag_mle(const struct wpa_bss *bss, u8 type)
 
 const u8 * wpa_bss_get_rsne(const struct wpa_bss *bss)
 {
+	const u8 *ie;
+
+	ie = wpa_bss_get_vendor_ie(bss, RSNE_OVERRIDE_IE_VENDOR_TYPE);
+	if (ie)
+		return ie;
 	return wpa_bss_get_ie(bss, WLAN_EID_RSN);
 }
 
 
 const u8 * wpa_bss_get_rsnxe(const struct wpa_bss *bss)
 {
+	const u8 *ie;
+
+	ie = wpa_bss_get_vendor_ie(bss, RSNXE_OVERRIDE_IE_VENDOR_TYPE);
+	if (ie)
+		return ie;
 	return wpa_bss_get_ie(bss, WLAN_EID_RSNX);
 }
