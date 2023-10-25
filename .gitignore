@@ -1,5 +1,7 @@
 *.pyc
 *~
+result
+result-man
 tests/hwsim/logs
 tests/remote/logs
 wpaspy/build
